@@ -8,6 +8,7 @@ from pymysqlreplication.row_event import (
 )
 from binlog2sql_util import concat_sql_from_binlog_event
 
+# 源服务器
 mysql_setting = {
     "host": "127.0.0.1",
     "port": 3306,
@@ -15,6 +16,8 @@ mysql_setting = {
     "passwd": "yanchupiaowu",
     "charset": "utf8mb4"
 }
+
+# 同步到服务器
 remote_mysql_setting = {
     "host": "127.0.0.1",
     "port": 3306,
@@ -23,8 +26,8 @@ remote_mysql_setting = {
     "charset": "utf8mb4",
     "db": "ljj_remote"
 }
-only_schemas = ['ljj']
-only_tables = ['articles1']
+only_schemas = ['ljj'] # 只关注这些数据库
+only_tables = ['articles1'] # 只关注这些表
 binlog_file = 'binlog.000003'
 log_pos=4
 
@@ -55,8 +58,8 @@ def main():
         for binlog_event in stream:
             for row in binlog_event.rows:
                 sql = concat_sql_from_binlog_event(cursor=cursor, binlog_event=binlog_event,row=row)
-                print(sql)
-                #remote_cursor.execute(sql)
+                # print(sql)
+                remote_cursor.execute(sql)
                 log=stream.log_file+'|'+str(binlog_event.packet.log_pos)
                 write_log(log_file, log)
 
